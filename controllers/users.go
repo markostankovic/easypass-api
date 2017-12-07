@@ -55,9 +55,21 @@ func CreateToken (w http.ResponseWriter, req *http.Request)  {
 	user := models.NewEmptyUser()
 	_ = json.NewDecoder(req.Body).Decode(&user)
 
+	result, err := models.GetUser(user)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(result)
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"active": user.Active,
+		"company": user.Company,
 		"email": user.Email,
-		"password": user.Password,
+		"firstname": user.Firstname,
+		"lastname": user.Lastname,
+		"id": user.ID,
 	})
 	secret := os.Getenv("JWT_SECRET")
 	tokenString, error := token.SignedString([]byte(secret))
