@@ -61,22 +61,23 @@ func CreateToken (w http.ResponseWriter, req *http.Request)  {
 		fmt.Println(err)
 	}
 
-	fmt.Println(result)
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"active": user.Active,
-		"company": user.Company,
-		"email": user.Email,
-		"firstname": user.Firstname,
-		"lastname": user.Lastname,
-		"id": user.ID,
-	})
-	secret := os.Getenv("JWT_SECRET")
-	tokenString, error := token.SignedString([]byte(secret))
-	if error != nil {
-		fmt.Println(error)
+	if len(result.ID) > 0 {
+		fmt.Println(result)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"active": result.Active,
+			"company": result.Company,
+			"email": result.Email,
+			"firstname": result.Firstname,
+			"lastname": result.Lastname,
+			"id": result.ID,
+		})
+		secret := os.Getenv("JWT_SECRET")
+		tokenString, error := token.SignedString([]byte(secret))
+		if error != nil {
+			fmt.Println(error)
+		}
+		json.NewEncoder(w).Encode(JwtToken{Token: tokenString})
 	}
-	json.NewEncoder(w).Encode(JwtToken{Token: tokenString})
 }
 
 func ValidateMiddleware(next http.HandlerFunc) http.HandlerFunc {

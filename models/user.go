@@ -23,7 +23,19 @@ func GetUser(u *User) (nu *User, err error) {
 	h.Write([]byte(u.Password))
 	hash := hex.EncodeToString(h.Sum(nil))
 
-	db.QueryRow("SELECT user_id, email, firstname, lastname, active, company FROM user WHERE email=? and password=?", u.Email, hash).Scan(&result.ID, &result.Email, &result.Firstname, &result.Lastname, &result.Active, &result.Company)
+	err = db.QueryRow(`SELECT user_id, email, firstname, lastname, active, company
+		FROM user
+		WHERE email=? and password=?`, u.Email, hash).Scan(
+		&result.ID,
+		&result.Email,
+		&result.Firstname,
+		&result.Lastname,
+		&result.Active,
+		&result.Company)
+
+	if err != nil {
+		fmt.Print(err.Error())
+	}
 
 	return result, err
 }
