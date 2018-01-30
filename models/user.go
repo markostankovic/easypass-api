@@ -56,19 +56,20 @@ func NewEmptyUser() *User {
 
 func TestUserTable()  {
 	const tableCreationQuery = `
-	CREATE TABLE IF NOT EXISTS easypass.user (
-	  user_id INT NOT NULL,
-	  username VARCHAR(16) NULL,
-	  email VARCHAR(255) NOT NULL,
-	  password VARCHAR(255) NOT NULL,
-	  create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	  firstname VARCHAR(45) NULL,
-	  lastname VARCHAR(45) NULL,
-	  company VARCHAR(45) NULL,
-	  active  TINYINT NULL,
-	  UNIQUE INDEX user_id_UNIQUE (user_id ASC),
-	  PRIMARY KEY (user_id),
-	  UNIQUE INDEX email_UNIQUE (email ASC))`
+	CREATE TABLE IF NOT EXISTS user (
+		user_id int(11) NOT NULL AUTO_INCREMENT,
+		username varchar(16) DEFAULT NULL,
+		email varchar(255) NOT NULL,
+		password varchar(255) NOT NULL,
+		create_time timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+		firstname varchar(45) DEFAULT NULL,
+		lastname varchar(45) DEFAULT NULL,
+		company varchar(45) DEFAULT NULL,
+		active tinyint(4) DEFAULT NULL,
+		PRIMARY KEY (user_id),
+		UNIQUE KEY user_id_UNIQUE (user_id),
+		UNIQUE KEY email_UNIQUE (email)
+	) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8`
 
 	const insertUser = "INSERT INTO user(username, email, password, firstname, lastname, active) VALUES(?, ?, ?, ?, ?, ?)"
 
@@ -90,12 +91,13 @@ func TestUserTable()  {
 }
 
 func TestRolesTable()  {
-	const tableCreationQuery = `CREATE TABLE IF NOT EXISTS easypass.roles (
-  role_id INT NOT NULL,
-  name VARCHAR(45) NOT NULL,
-  active TINYINT NOT NULL,
-  PRIMARY KEY (role_id),
-  UNIQUE INDEX role_id_UNIQUE (role_id ASC))`
+	const tableCreationQuery = `CREATE TABLE IF NOT EXISTS roles (
+	  role_id int(11) NOT NULL,
+	  name varchar(45) NOT NULL,
+	  active tinyint(4) NOT NULL,
+	  PRIMARY KEY (role_id),
+	  UNIQUE KEY role_id_UNIQUE (role_id)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8`
 	_, err := db.Exec(tableCreationQuery)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -103,20 +105,10 @@ func TestRolesTable()  {
 }
 
 func TestUserRoleTable()  {
-	const tableCreationQuery = `CREATE TABLE IF NOT EXISTS easypass.user_role (
-	  user_id INT NOT NULL,
-	  role_id INT NOT NULL,
-	  INDEX role_id_idx (role_id ASC),
-	  CONSTRAINT user_id
-		FOREIGN KEY (user_id)
-		REFERENCES easypass.user (user_id)
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION,
-	  CONSTRAINT role_id
-		FOREIGN KEY (role_id)
-		REFERENCES easypass.roles (role_id)
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION)`
+	const tableCreationQuery = `CREATE TABLE IF NOT EXISTS user_role (
+	  user_id int(11) NOT NULL,
+	  role_id int(11) NOT NULL
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8`
 
 	_, err := db.Exec(tableCreationQuery)
 	if err != nil {
