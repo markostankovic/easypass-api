@@ -9,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/markostankovic/easypass-api/models"
 	"os"
+	"github.com/gorilla/handlers"
 )
 
 func main() {
@@ -22,5 +23,9 @@ func main() {
 	router.HandleFunc("/user/{id}", controllers.ValidateMiddleware(controllers.GetUserById)).Methods("GET")
 	router.HandleFunc("/user", controllers.ValidateMiddleware(controllers.NewUser)).Methods("POST")
 	router.HandleFunc("/login", controllers.CreateToken).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}),
+	)(router)))
 }
