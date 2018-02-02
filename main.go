@@ -19,11 +19,12 @@ func main() {
 	models.InitDB(dataAcceess)
 	router := mux.NewRouter()
 
+	router.HandleFunc("/user", controllers.ValidateMiddleware(controllers.GetLoggedUser)).Methods("GET")
 	router.HandleFunc("/users", controllers.ValidateMiddleware(controllers.GetAllUsers)).Methods("GET")
 	router.HandleFunc("/user/{id}", controllers.ValidateMiddleware(controllers.GetUserById)).Methods("GET")
 	router.HandleFunc("/user", controllers.ValidateMiddleware(controllers.NewUser)).Methods("POST")
 	router.HandleFunc("/login", controllers.CreateToken).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(
+	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(
 		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),
